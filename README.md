@@ -4,7 +4,7 @@ Congo: a matched case-control study" by Malembaka et al.
 
 ## Data 
 
-We provide three data sets from this study to reproduce analyses. One file from study period 1 (`data/df_period1.rds`) one from study period 2 (`data/df_period1.rds`)
+We provide three data sets from this study to reproduce analyses. One file from study period 1 (`data/df_period1.rds`), one from study period 2 (`data/df_period1.rds`) and one of the combined data across periods (`data/df_combined.rds`). 
 
 1. `df_period1.rds`
    
