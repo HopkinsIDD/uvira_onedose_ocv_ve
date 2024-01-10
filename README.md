@@ -16,13 +16,13 @@ We provide three data sets from this study to reproduce analyses. One file from 
 | case_control  | binary        | 0 if control, 1 if case |
 | age_vacc      | decimal       | age at vaccination in years|
 | age_group_vacc | string       | age group at vaccination in years|
+| cat_sex        |  string            |   sex of the participant               | 
 | ocv_single_dose | string ('Single dose' or 'Not vaccinated')     | classification of vaccination status for main analysis|
-| ocv_2dose     |  string |    | 
-| ocv_atleast_1dose | srting |  | 
-| cat_sex        |  string            |                  | 
-| ocv_all_dose  |   | | 
-| vaccine_card | | | 
-| ind_vacc_card | | | 
+| ocv_2dose     |  string ('Two doses' or 'Not vaccinated' | classification of vaccination status by receipt of of two doses of kOCV     | 
+| ocv_atleast_1dose | string ('At least one dose' or 'Not vaccinated'  | classification of vaccination status by receipt of at least one dose of kOCV | 
+| ocv_all_dose  | string ('Two doses', 'One dose', 'Not vaccinated')| overall classification of the vaccination status | 
+| vaccine_card | string ('Available', 'Unavailable' | availability of the vaccination card for those reporting to be vaccinated |
+| ind_vacc_card | string ('yes', 'no' | availability of the vaccination card for those reporting to be vaccinated |
 
 2. `df_period2.rds`
    
