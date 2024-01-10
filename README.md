@@ -33,7 +33,7 @@ This date set includes all the variables available in 'df_period1.rds', with add
 | drinking_water_source  | string  ('Improved' or 'Unimproved' | drinking water source used by the participant, classified based on the JMP criteria| 
 | educ  | string ('None or primary', 'Lower secondary', 'Upper secondary', or 'Bachelors or higher'  | level of education attainment|
 | handwash_soapwater  | string ('No' or 'Yes') | availability of a handwashing facility with soap and water in the household|  
-| hh_size | integer number of people in the participant's |
+| hh_size | integer | number of people in the participant's |
 | n_hh_centered | decimal| household size centered to the mean |    
 | occup | string ('No work', 'Preschool children', 'Students', 'Informal work', 'Salaried')| participant's occupation|
 | toilet_shared |string ('Private' or 'Shared' | hether the participant used a toilet shared by multiple households compared with using a private toilet|
