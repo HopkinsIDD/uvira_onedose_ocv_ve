@@ -26,7 +26,7 @@ We provide three data sets from this study to reproduce analyses. One file from 
 
 2. `df_period2.rds`
 
-This date set includes all the variables available in 'df_period1.rds', with additional data on household characteristics.
+This data set includes all the variables available in 'df_period1.rds', with additional data on household characteristics.
 
 | variable name | variable type | definition |
 |---------------|---------------|------------|
