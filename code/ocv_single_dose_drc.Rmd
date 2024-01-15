@@ -1,12 +1,13 @@
 ---
 title: "Effectiveness of one dose of killed oral cholera vaccine in an endemic community in the Democratic Republic of Congo: A matched case-control study"
 
-date: "09 January 2024"
+date: "05 December 2023"
+author: 
 output: html_document
  
 ---
 
-This file presents the primary analyses from the manuscript _Effectiveness of one dose of killed oral cholera vaccine in an endemic community in the Democratic Republic of Congo: A matched case-control study_ by Malembaka et al. We have tried to make this code readable but if you have any issues please feel free to reach out to [Espoir Bwenge Malembaka](ebwenge1@jhu.edu) or [Andrew S. Azman](azman@jhu.edu).
+This file presents the primary analyses from the manuscript _Effectiveness of one dose of killed oral cholera vaccine in an endemic community in the Democratic Republic of Congo: A matched case-control study_ by Malembaka et al. We have tried to make this code readable but if you have any issues please feel free to reach out to [Espoir Bwenge Malembaka](ebwenge1@jhu.edu) or [Andrew Azman](azman@jhu.edu).
 
 ```{r setup, include=FALSE}
 
@@ -24,21 +25,26 @@ knitr::opts_knit$set(root.dir = here::here())
 knitr::opts_chunk$set(echo=F,ft_max_row = 50, message=F, warning=F, eval=T, fig.align='center',fig.pos='ht')
 
 flextable::use_df_printer()
+
 ```
 
 
 
 ```{r loading data}
 
-# loading the data
+# laoding the data
+# The path should be updated to the public repository
 
 ## Study Period 1 (12-17 months post-vaccination)
+
 df_period1 <- readRDS(here::here("data/df_period1.rds"))
 
 ## Study Period 1 (12-17 months post-vaccination)
+
 df_period2 <- readRDS(here::here("data/df_period2.rds"))
 
 ## Study Period 2 (24-31 months post-vaccination)
+
 df_combined <- readRDS(here::here("data/df_combined.rds"))
 
 ```
@@ -50,9 +56,12 @@ df_combined <- readRDS(here::here("data/df_combined.rds"))
 ```{r table1, combined}
 
 # Table 1: Characteristics of study participants by case-control status
+
 df_table1_combined <- df_combined %>% 
   filter(cat_sex %in% c("female", "male")) %>% 
   mutate(vax_card = case_when(
+    # vaccine_card == "Available" ~ "yes",
+    # vaccine_card == "Unavailable" ~ "no",
     ind_vacc_card == "yes" ~ "yes",
     ind_vacc_card == "no" ~ "no"),
     
@@ -63,10 +72,11 @@ df_table1_combined <- df_combined %>%
 
 
 table1_combined <- df_table1_combined %>% 
-  tbl_summary(by = case_status,
-              type = all_continuous() ~ "continuous2",# indicate that you want to print multiple statistics 
-              statistic = list(all_continuous() ~ c("{mean} ({sd})", "{median} ({p25}, {p75})"),                 
-                               all_categorical() ~ "{n} ({p}%)"),
+  tbl_summary(by=case_status,
+              
+              type = all_continuous() ~ "continuous2",       # indicate that you want to print multiple statistics 
+         statistic = list(all_continuous() ~ c("{mean} ({sd})", "{median} ({p25}, {p75})"),                 
+                          all_categorical() ~ "{n} ({p}%)"),
               
               digits = list(all_categorical() ~ c(0, 1),
                             all_continuous() ~ 1),
@@ -77,13 +87,17 @@ table1_combined <- df_table1_combined %>%
                 ocv_all_dose ~ "Vaccination status",
                 cat_sex ~ "Sex",
                 vax_card ~ "Vaccination card"
-              ),
-              missing_text = "Missing"
-  ) %>% 
+                ),
+        missing_text = "Missing"
+        #,
+         #     percent = "row"
+        #      missing= "no"
+                      ) %>% 
   add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>% 
   add_overall(last = F) 
 
 # Display table 1 as a flextable object
+
 table1_combined  %>% as_flex_table() %>% 
   flextable::set_table_properties( width = 1, layout = "autofit") 
 
@@ -98,13 +112,16 @@ table1_combined  %>% as_flex_table() %>%
 
 table2 <- df_period2 %>% 
   dplyr::select(case_status, age_vacc, age_group_vacc, cat_sex, educ, occup, hh_size, toilet_shared, toilet_type, handwash_soapwater,  wealth_index, ocv_all_dose, vaccine_card) %>% 
-  mutate(wealth_index = wealth_index * 100) %>% 
-  tbl_summary(by = case_status,
-              type = all_continuous() ~ "continuous2",  # indicate that you want to print multiple statistics 
-              statistic = list(all_continuous() ~ c("{mean} ({sd})", "{median} ({p25}, {p75})"),                 
-                               all_categorical() ~ "{n} ({p}%)"),
+  mutate(wealth_index = wealth_index *100) %>% 
+  tbl_summary(by=case_status,
+              
+         type = all_continuous() ~ "continuous2",       # indicate that you want to print multiple statistics 
+         statistic = list(all_continuous() ~ c("{mean} ({sd})", "{median} ({p25}, {p75})"),                 
+                          all_categorical() ~ "{n} ({p}%)"),
+         
               digits = list(all_categorical() ~ c(0, 1),
                             all_continuous() ~ 1),
+         
               label  = list(  
                 age_vacc ~ "Age at vaccination (years)",
                 age_group_vacc ~ "Age group at vaccination (years)",
@@ -118,8 +135,8 @@ table2 <- df_period2 %>%
                 wealth_index ~ "Wealth index",
                 occup ~ "Occupation",
                 vaccine_card ~ "Vaccination card"
-              ),
-              missing_text = "Missing" ) %>% 
+                ),
+        missing_text = "Missing" ) %>% 
   add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>% 
   add_overall(last = F) 
 
@@ -127,6 +144,8 @@ table2 <- df_period2 %>%
 table2 %>% 
   as_flex_table() %>% 
   flextable::set_table_properties( width = 1, layout = "autofit") 
+
+
 ```
 
 
@@ -136,6 +155,7 @@ table2 %>%
 ```{r characteristics of participants in study period 1}
 
 # Table 1: Characteristics of study participants by case-control status
+
 df_table1_retro <- df_period1 %>% 
   filter(cat_sex %in% c("female", "male")) %>% 
   mutate(vax_card = case_when(
@@ -147,8 +167,8 @@ table1_retro <- df_table1_retro %>%
   tbl_summary(by=case_status,
               
               type = all_continuous() ~ "continuous2",       # indicate that you want to print multiple statistics 
-              statistic = list(all_continuous() ~ c("{mean} ({sd})", "{median} ({p25}, {p75})"),                 
-                               all_categorical() ~ "{n} ({p}%)"),
+         statistic = list(all_continuous() ~ c("{mean} ({sd})", "{median} ({p25}, {p75})"),                 
+                          all_categorical() ~ "{n} ({p}%)"),
               
               digits = list(all_categorical() ~ c(0, 1),
                             all_continuous() ~ 1),
@@ -159,12 +179,12 @@ table1_retro <- df_table1_retro %>%
                 ocv_all_dose ~ "Vaccination status",
                 cat_sex ~ "Sex",
                 vaccine_card ~ "Vaccination card"
-              ),
-              missing_text = "Missing"
-              #,
-              #     percent = "row"
-              #      missing= "no"
-  ) %>% 
+                ),
+        missing_text = "Missing"
+        #,
+         #     percent = "row"
+        #      missing= "no"
+                      ) %>% 
   add_p(pvalue_fun = ~style_pvalue(., digits = 3)) %>% 
   add_overall(last = F) 
 
@@ -176,27 +196,28 @@ table1_retro  %>% as_flex_table() %>%
 ```
 
 
+### Effective sample size
+
+
 ```{r function for effective numbers}
-# here are some functions for getting the effective sample size for the matched analysis 
-# since matched sets with all the same vaccination status and those with missing vac data are dropped from 
-# likelihood
 
 # For cases
+
 get_n_cases_single_dose <- function(df) { 
-  
+ 
   effective_n_cases = df %>% 
-    filter(!is.na(ocv_single_dose)) %>% 
-    dplyr::select(id_case, record_id, ocv_single_dose, ocv_all_dose, case_control) %>% 
-    group_by(id_case) %>% 
-    mutate(vaccine_case = first(ocv_single_dose)) %>% 
-    mutate(same_vacc = ifelse(ocv_single_dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
-    dplyr::add_count(id_case, name="n_cc_set") %>% 
-    mutate(n_different = sum(same_vacc)) %>% 
-    filter(case_control ==1) %>% 
-    filter(n_different >0) %>% 
-    distinct(id_case, .keep_all = TRUE) %>% 
-    nrow()
-  
+  filter(!is.na(ocv_single_dose)) %>% 
+  dplyr::select(id_case, record_id, ocv_single_dose, ocv_all_dose, case_control) %>% 
+  group_by(id_case) %>% 
+  mutate(vaccine_case = first(ocv_single_dose)) %>% 
+  mutate(same_vacc = ifelse(ocv_single_dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
+  dplyr::add_count(id_case, name="n_cc_set") %>% 
+  mutate(n_different = sum(same_vacc)) %>% 
+  filter(case_control ==1) %>% 
+  filter(n_different >0) %>% 
+  distinct(id_case, .keep_all = TRUE) %>% 
+  nrow()
+
   return(effective_n_cases)
 }
 
@@ -204,20 +225,20 @@ get_n_cases_single_dose <- function(df) {
 
 get_n_cases_atleast_1dose <- function(df) { 
   
-  
+ 
   effective_n_cases = df %>% 
-    filter(!is.na(ocv_atleast_1dose)) %>% 
-    dplyr::select(id_case, record_id, ocv_atleast_1dose, ocv_all_dose, case_control) %>% 
-    group_by(id_case) %>% 
-    mutate(vaccine_case = first(ocv_atleast_1dose)) %>% 
-    mutate(same_vacc = ifelse(ocv_atleast_1dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
-    dplyr::add_count(id_case, name="n_cc_set") %>% 
-    mutate(n_different = sum(same_vacc)) %>% 
-    filter(case_control ==1) %>% 
-    filter(n_different >0) %>% 
-    distinct(id_case, .keep_all = TRUE) %>% 
-    nrow()
-  
+  filter(!is.na(ocv_atleast_1dose)) %>% 
+  dplyr::select(id_case, record_id, ocv_atleast_1dose, ocv_all_dose, case_control) %>% 
+  group_by(id_case) %>% 
+  mutate(vaccine_case = first(ocv_atleast_1dose)) %>% 
+  mutate(same_vacc = ifelse(ocv_atleast_1dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
+  dplyr::add_count(id_case, name="n_cc_set") %>% 
+  mutate(n_different = sum(same_vacc)) %>% 
+  filter(case_control ==1) %>% 
+  filter(n_different >0) %>% 
+  distinct(id_case, .keep_all = TRUE) %>% 
+  nrow()
+
   return(effective_n_cases)
 }
 
@@ -226,18 +247,18 @@ get_n_cases_atleast_1dose <- function(df) {
 get_n_cases_2dose <- function(df) { 
   
   effective_n_cases = df %>% 
-    filter(!is.na(ocv_2dose)) %>% 
-    dplyr::select(id_case, record_id, ocv_2dose, ocv_all_dose, case_control) %>% 
-    group_by(id_case) %>% 
-    mutate(vaccine_case = first(ocv_2dose)) %>% 
-    mutate(same_vacc = ifelse(ocv_2dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
-    dplyr::add_count(id_case, name="n_cc_set") %>% 
-    mutate(n_different = sum(same_vacc)) %>% 
-    filter(case_control ==1) %>% 
-    filter(n_different >0) %>% 
-    distinct(id_case, .keep_all = TRUE) %>% 
-    nrow()
-  
+  filter(!is.na(ocv_2dose)) %>% 
+  dplyr::select(id_case, record_id, ocv_2dose, ocv_all_dose, case_control) %>% 
+  group_by(id_case) %>% 
+  mutate(vaccine_case = first(ocv_2dose)) %>% 
+  mutate(same_vacc = ifelse(ocv_2dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
+  dplyr::add_count(id_case, name="n_cc_set") %>% 
+  mutate(n_different = sum(same_vacc)) %>% 
+  filter(case_control ==1) %>% 
+  filter(n_different >0) %>% 
+  distinct(id_case, .keep_all = TRUE) %>% 
+  nrow()
+
   return(effective_n_cases)
 }
 
@@ -245,44 +266,44 @@ get_n_cases_2dose <- function(df) {
 ## single dose, effective n of controls 
 
 get_n_controls_single_dose <- function(df) { 
-  
+ 
   effective_n_controls  = df %>% 
-    filter(!is.na(ocv_single_dose)) %>% 
-    dplyr::select(id_case, record_id, ocv_all_dose, ocv_single_dose, case_control) %>% 
-    group_by(id_case) %>% 
-    mutate(vaccine_case = first(ocv_single_dose)) %>% 
-    mutate(same_vacc = ifelse(ocv_single_dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
-    dplyr::add_count(id_case, name="n_cc_set") %>% 
-    mutate(n_different = sum(same_vacc)) %>% 
-    filter(case_control ==0) %>% 
-    filter(n_different >0) %>% 
-    distinct(id_case, .keep_all = TRUE) %>% 
-    ungroup() %>% 
-    summarise(n_controls_effective = sum(n_different)) %>% 
-    pull(n_controls_effective)
+  filter(!is.na(ocv_single_dose)) %>% 
+  dplyr::select(id_case, record_id, ocv_all_dose, ocv_single_dose, case_control) %>% 
+  group_by(id_case) %>% 
+  mutate(vaccine_case = first(ocv_single_dose)) %>% 
+  mutate(same_vacc = ifelse(ocv_single_dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
+  dplyr::add_count(id_case, name="n_cc_set") %>% 
+  mutate(n_different = sum(same_vacc)) %>% 
+  filter(case_control ==0) %>% 
+  filter(n_different >0) %>% 
+  distinct(id_case, .keep_all = TRUE) %>% 
+  ungroup() %>% 
+  summarise(n_controls_effective = sum(n_different)) %>% 
+  pull(n_controls_effective)
   
   return(effective_n_controls)
   
 }
-
-## at least 1 dose, effective n of controls 
+  
+  ## at least 1 dose, effective n of controls 
 
 get_n_controls_atleast_1dose <- function(df) { 
-  
+ 
   effective_n_controls  = df %>% 
-    filter(!is.na(ocv_atleast_1dose)) %>% 
-    dplyr::select(id_case, record_id, ocv_all_dose, ocv_atleast_1dose, case_control) %>% 
-    group_by(id_case) %>% 
-    mutate(vaccine_case = first(ocv_atleast_1dose)) %>% 
-    mutate(same_vacc = ifelse(ocv_atleast_1dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
-    dplyr::add_count(id_case, name="n_cc_set") %>% 
-    mutate(n_different = sum(same_vacc)) %>% 
-    filter(case_control ==0) %>% 
-    filter(n_different >0) %>% 
-    distinct(id_case, .keep_all = TRUE) %>% 
-    ungroup() %>% 
-    summarise(n_controls_effective = sum(n_different)) %>% 
-    pull(n_controls_effective)
+  filter(!is.na(ocv_atleast_1dose)) %>% 
+  dplyr::select(id_case, record_id, ocv_all_dose, ocv_atleast_1dose, case_control) %>% 
+  group_by(id_case) %>% 
+  mutate(vaccine_case = first(ocv_atleast_1dose)) %>% 
+  mutate(same_vacc = ifelse(ocv_atleast_1dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
+  dplyr::add_count(id_case, name="n_cc_set") %>% 
+  mutate(n_different = sum(same_vacc)) %>% 
+  filter(case_control ==0) %>% 
+  filter(n_different >0) %>% 
+  distinct(id_case, .keep_all = TRUE) %>% 
+  ungroup() %>% 
+  summarise(n_controls_effective = sum(n_different)) %>% 
+  pull(n_controls_effective)
   
   return(effective_n_controls)
   
@@ -291,21 +312,21 @@ get_n_controls_atleast_1dose <- function(df) {
 ## effective n of controls , 2 doses
 
 get_n_controls_2dose <- function(df) { 
-  
+ 
   effective_n_controls  = df %>% 
-    filter(!is.na(ocv_2dose)) %>% 
-    dplyr::select(id_case, record_id, ocv_all_dose, ocv_2dose, case_control) %>% 
-    group_by(id_case) %>% 
-    mutate(vaccine_case = first(ocv_2dose)) %>% 
-    mutate(same_vacc = ifelse(ocv_2dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
-    dplyr::add_count(id_case, name="n_cc_set") %>% 
-    mutate(n_different = sum(same_vacc)) %>% 
-    filter(case_control ==0) %>% 
-    filter(n_different >0) %>% 
-    distinct(id_case, .keep_all = TRUE) %>% 
-    ungroup() %>% 
-    summarise(n_controls_effective = sum(n_different)) %>% 
-    pull(n_controls_effective)
+  filter(!is.na(ocv_2dose)) %>% 
+  dplyr::select(id_case, record_id, ocv_all_dose, ocv_2dose, case_control) %>% 
+  group_by(id_case) %>% 
+  mutate(vaccine_case = first(ocv_2dose)) %>% 
+  mutate(same_vacc = ifelse(ocv_2dose != vaccine_case, 1 , 0)) %>%  ## 1 = controls with vaccination status different from that of the case
+  dplyr::add_count(id_case, name="n_cc_set") %>% 
+  mutate(n_different = sum(same_vacc)) %>% 
+  filter(case_control ==0) %>% 
+  filter(n_different >0) %>% 
+  distinct(id_case, .keep_all = TRUE) %>% 
+  ungroup() %>% 
+  summarise(n_controls_effective = sum(n_different)) %>% 
+  pull(n_controls_effective)
   
   return(effective_n_controls)
   
@@ -318,29 +339,37 @@ get_n_controls_2dose <- function(df) {
 # SINGLE DOSE
 # Single dose, study period 2 (prospective)
 # All ages
+
 effective_n_cases_1dose_all_pro = get_n_cases_single_dose(df = df_period2)
 effective_n_controls_1dose_all_pro  = get_n_controls_single_dose(df = df_period2)
 
 # Participants above 5 years of age
+
 effective_n_cases_1dose_above5_pro = get_n_cases_single_dose(df = df_period2 %>% filter(age_vacc >= 5)) 
 effective_n_controls_1dose_above5_pro = get_n_controls_single_dose(df = df_period2 %>% filter(age_vacc >= 5))
 
 # Participants under 5 years of age
+
 effective_n_cases_1dose_under5_pro = get_n_cases_single_dose(df = df_period2 %>% filter(age_vacc < 5)) 
 effective_n_controls_1dose_under5_pro = get_n_controls_single_dose(df = df_period2 %>% filter(age_vacc < 5))
 
 # Single dose, retrospective case-control study ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 # All participants
+
 effective_n_cases_1dose_all_retro  = get_n_cases_single_dose(df = df_period1) 
 effective_n_controls_1dose_all_retro = get_n_controls_single_dose(df = df_period1) 
 
 # Participants above 5 years of age
+
 effective_n_cases_1dose_above5_retro = get_n_cases_single_dose(df = df_period1 %>% filter(age_vacc >= 5)) 
 effective_n_controls_1dose_above5_retro = get_n_controls_single_dose(df = df_period1 %>% filter(age_vacc >= 5))
 
 # Participants under 5 years of age
+
 effective_n_cases_1dose_under5_retro = get_n_cases_single_dose(df = df_period1 %>% filter(age_vacc < 5)) 
 effective_n_controls_1dose_under5_retro = get_n_controls_single_dose(df = df_period1 %>% filter(age_vacc < 5)) 
+ 
+
 # Combined data  ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 ####Single dose, combined data
 ##### All ages, cases, combined data, single dose
@@ -358,7 +387,7 @@ effective_n_controls_1dose_above5_combined = get_n_controls_single_dose(df = df_
 
 effective_n_cases_1dose_under5_combined = get_n_cases_single_dose(df = df_combined %>% filter(age_vacc < 5)) 
 effective_n_controls_1dose_under5_combined = get_n_controls_single_dose(df = df_combined %>% filter(age_vacc < 5)) 
-
+ 
 
 ## TWO DOSES
 
@@ -390,7 +419,7 @@ effective_n_controls_2dose_above5_retro = get_n_controls_2dose(df = df_period1 %
 
 effective_n_cases_2dose_under5_retro = get_n_cases_2dose(df = df_period1 %>% filter(age_vacc < 5)) 
 effective_n_controls_2dose_under5_retro = get_n_controls_2dose(df = df_period1 %>% filter(age_vacc < 5)) 
-
+ 
 
 # Combined data  ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 ####Single dose, combined data
@@ -409,7 +438,7 @@ effective_n_controls_2dose_above5_combined = get_n_controls_2dose(df = df_combin
 
 effective_n_cases_2dose_under5_combined = get_n_cases_2dose(df = df_combined %>% filter(age_vacc < 5)) 
 effective_n_controls_2dose_under5_combined = get_n_controls_2dose(df = df_combined %>% filter(age_vacc < 5)) 
-
+ 
 
 # AT LEAST 1 DOSE
 
@@ -441,7 +470,7 @@ effective_n_controls_atleast_1dose_above5_retro = get_n_controls_atleast_1dose(d
 
 effective_n_cases_atleast_1dose_under5_retro = get_n_cases_atleast_1dose(df = df_period1 %>% filter(age_vacc < 5)) 
 effective_n_controls_atleast_1dose_under5_retro = get_n_controls_atleast_1dose(df = df_period1 %>% filter(age_vacc < 5)) 
-
+ 
 
 # Combined data  ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 ####Single dose, combined data
@@ -460,7 +489,7 @@ effective_n_controls_atleast_1dose_above5_combined = get_n_controls_atleast_1dos
 
 effective_n_cases_atleast_1dose_under5_combined = get_n_cases_atleast_1dose(df = df_combined %>% filter(age_vacc < 5)) 
 effective_n_controls_atleast_1dose_under5_combined = get_n_controls_atleast_1dose(df = df_combined %>% filter(age_vacc < 5)) 
-
+ 
 
 # Data frame with effective n of cases
 
@@ -469,61 +498,61 @@ df_effective_sample <- data.frame(Duration = c(rep("One year", 3), rep("Two year
                                   Population=rep(c("All participants", "Participants above 5 years of age", "Participants under 5 years of age"), 3),
                                   
                                   effective_n_cases_1dose = c(effective_n_cases_1dose_all_retro, 
-                                                              effective_n_cases_1dose_above5_retro,
-                                                              effective_n_cases_1dose_under5_retro,
-                                                              effective_n_cases_1dose_all_pro,
-                                                              effective_n_cases_1dose_above5_pro,
-                                                              effective_n_cases_1dose_under5_pro,
-                                                              effective_n_cases_1dose_all_combined,
-                                                              effective_n_cases_1dose_above5_combined,
-                                                              effective_n_cases_1dose_under5_combined),
+                                                        effective_n_cases_1dose_above5_retro,
+                                                        effective_n_cases_1dose_under5_retro,
+                                                        effective_n_cases_1dose_all_pro,
+                                                        effective_n_cases_1dose_above5_pro,
+                                                        effective_n_cases_1dose_under5_pro,
+                                                        effective_n_cases_1dose_all_combined,
+                                                        effective_n_cases_1dose_above5_combined,
+                                                        effective_n_cases_1dose_under5_combined),
                                   effective_n_cases_2dose  = c(effective_n_cases_2dose_all_retro, 
-                                                               effective_n_cases_2dose_above5_retro,
-                                                               effective_n_cases_2dose_under5_retro,
-                                                               effective_n_cases_2dose_all_pro,
-                                                               effective_n_cases_2dose_above5_pro,
-                                                               effective_n_cases_2dose_under5_pro,
-                                                               effective_n_cases_2dose_all_combined,
-                                                               effective_n_cases_2dose_above5_combined,
-                                                               effective_n_cases_2dose_under5_combined),
+                                                        effective_n_cases_2dose_above5_retro,
+                                                        effective_n_cases_2dose_under5_retro,
+                                                        effective_n_cases_2dose_all_pro,
+                                                        effective_n_cases_2dose_above5_pro,
+                                                        effective_n_cases_2dose_under5_pro,
+                                                        effective_n_cases_2dose_all_combined,
+                                                        effective_n_cases_2dose_above5_combined,
+                                                        effective_n_cases_2dose_under5_combined),
                                   effective_n_cases_atleast_1dose  = c(effective_n_cases_atleast_1dose_all_retro, 
-                                                                       effective_n_cases_atleast_1dose_above5_retro,
-                                                                       effective_n_cases_atleast_1dose_under5_retro,
-                                                                       effective_n_cases_atleast_1dose_all_pro,
-                                                                       effective_n_cases_atleast_1dose_above5_pro,
-                                                                       effective_n_cases_atleast_1dose_under5_pro,
-                                                                       effective_n_cases_atleast_1dose_all_combined,
-                                                                       effective_n_cases_atleast_1dose_above5_combined,
-                                                                       effective_n_cases_atleast_1dose_under5_combined),
+                                                        effective_n_cases_atleast_1dose_above5_retro,
+                                                        effective_n_cases_atleast_1dose_under5_retro,
+                                                        effective_n_cases_atleast_1dose_all_pro,
+                                                        effective_n_cases_atleast_1dose_above5_pro,
+                                                        effective_n_cases_atleast_1dose_under5_pro,
+                                                        effective_n_cases_atleast_1dose_all_combined,
+                                                        effective_n_cases_atleast_1dose_above5_combined,
+                                                        effective_n_cases_atleast_1dose_under5_combined),
                                   effective_n_controls_1dose = c(effective_n_controls_1dose_all_retro, 
-                                                                 effective_n_controls_1dose_above5_retro,
-                                                                 effective_n_controls_1dose_under5_retro,
-                                                                 effective_n_controls_1dose_all_pro,
-                                                                 effective_n_controls_1dose_above5_pro,
-                                                                 effective_n_controls_1dose_under5_pro,
-                                                                 effective_n_controls_1dose_all_combined,
-                                                                 effective_n_controls_1dose_above5_combined,
-                                                                 effective_n_controls_1dose_under5_combined),
+                                                        effective_n_controls_1dose_above5_retro,
+                                                        effective_n_controls_1dose_under5_retro,
+                                                        effective_n_controls_1dose_all_pro,
+                                                        effective_n_controls_1dose_above5_pro,
+                                                        effective_n_controls_1dose_under5_pro,
+                                                        effective_n_controls_1dose_all_combined,
+                                                        effective_n_controls_1dose_above5_combined,
+                                                        effective_n_controls_1dose_under5_combined),
                                   effective_n_controls_2dose  = c(effective_n_controls_2dose_all_retro, 
-                                                                  effective_n_controls_2dose_above5_retro,
-                                                                  effective_n_controls_2dose_under5_retro,
-                                                                  effective_n_controls_2dose_all_pro,
-                                                                  effective_n_controls_2dose_above5_pro,
-                                                                  effective_n_controls_2dose_under5_pro,
-                                                                  effective_n_controls_2dose_all_combined,
-                                                                  effective_n_controls_2dose_above5_combined,
-                                                                  effective_n_controls_2dose_under5_combined),
+                                                        effective_n_controls_2dose_above5_retro,
+                                                        effective_n_controls_2dose_under5_retro,
+                                                        effective_n_controls_2dose_all_pro,
+                                                        effective_n_controls_2dose_above5_pro,
+                                                        effective_n_controls_2dose_under5_pro,
+                                                        effective_n_controls_2dose_all_combined,
+                                                        effective_n_controls_2dose_above5_combined,
+                                                        effective_n_controls_2dose_under5_combined),
                                   effective_n_controls_atleast_1dose  = c(effective_n_controls_atleast_1dose_all_retro, 
-                                                                          effective_n_controls_atleast_1dose_above5_retro,
-                                                                          effective_n_controls_atleast_1dose_under5_retro,
-                                                                          effective_n_controls_atleast_1dose_all_pro,
-                                                                          effective_n_controls_atleast_1dose_above5_pro,
-                                                                          effective_n_controls_atleast_1dose_under5_pro,
-                                                                          effective_n_controls_atleast_1dose_all_combined,
-                                                                          effective_n_controls_atleast_1dose_above5_combined,
-                                                                          effective_n_controls_atleast_1dose_under5_combined))
-
-
+                                                        effective_n_controls_atleast_1dose_above5_retro,
+                                                        effective_n_controls_atleast_1dose_under5_retro,
+                                                        effective_n_controls_atleast_1dose_all_pro,
+                                                        effective_n_controls_atleast_1dose_above5_pro,
+                                                        effective_n_controls_atleast_1dose_under5_pro,
+                                                        effective_n_controls_atleast_1dose_all_combined,
+                                                        effective_n_controls_atleast_1dose_above5_combined,
+                                                        effective_n_controls_atleast_1dose_under5_combined))
+                                  
+                                  
 ```
 
 
@@ -551,23 +580,23 @@ confounders <- df_period2 %>%
 
 
 regress_unadj_match_ageint <- function(df,ocv){
-  
+ 
   # adding some extra fields to the data frame
   df <- df |> dplyr::mutate(u5=if_else(age_vacc<5,TRUE,FALSE),
-                            ocv_single_dose = case_when(ocv_single_dose=="Single dose" ~ TRUE,
-                                                        ocv_single_dose=="Not vaccinated" ~ FALSE,
-                                                        TRUE ~ NA),
-                            ocv_2dose = case_when(ocv_2dose=="Two doses" ~ TRUE,
-                                                  ocv_2dose=="Not vaccinated" ~ FALSE,
-                                                  TRUE ~ NA),
-                            ocv_atleast_1dose=case_when(ocv_atleast_1dose=="One dose or more" ~ TRUE,
-                                                        ocv_atleast_1dose=="Not vaccinated" ~ FALSE,
-                                                        TRUE ~ NA), 
-                            vac=case_when(.data[[ocv]]==TRUE ~ TRUE,
-                                          .data[[ocv]]==FALSE ~ FALSE,
-                                          TRUE ~ NA),
-                            vac_u5=vac*u5)
-  
+                     ocv_single_dose = case_when(ocv_single_dose=="Single dose" ~ TRUE,
+                     ocv_single_dose=="Not vaccinated" ~ FALSE,
+                     TRUE ~ NA),
+                     ocv_2dose = case_when(ocv_2dose=="Two doses" ~ TRUE,
+                      ocv_2dose=="Not vaccinated" ~ FALSE,
+                      TRUE ~ NA),
+                     ocv_atleast_1dose=case_when(ocv_atleast_1dose=="One dose or more" ~ TRUE,
+                      ocv_atleast_1dose=="Not vaccinated" ~ FALSE,
+                      TRUE ~ NA), 
+                     vac=case_when(.data[[ocv]]==TRUE ~ TRUE,
+                                   .data[[ocv]]==FALSE ~ FALSE,
+                                   TRUE ~ NA),
+                     vac_u5=vac*u5)
+
   formula <- as.formula(paste0(outcome, "~ vac + vac_u5 + strata(id_case)"))
   
   model  <- clogit(formula, data = df)
@@ -578,15 +607,15 @@ regress_unadj_match_ageint <- function(df,ocv){
   ve_o5 <- (conf_int_obj_o5[1] * 100) |> round(1)
   ve_o5_lb <- (conf_int_obj_o5[3] * 100) |> round(1)
   ve_o5_ub <- (conf_int_obj_o5[2] * 100) |> round(1)
-  
-  
+ 
+
   ## get estimates for u5
   glht_u5 <- glht(model, linfct = t(c(1,1)))
   conf_int_obj_u5 <- c(1-exp(confint(glht_u5 )$confint))
   ve_u5 <- (conf_int_obj_u5[1] * 100) |> round(1)
   ve_u5_lb <- (conf_int_obj_u5[3] * 100) |> round(1)
   ve_u5_ub <- (conf_int_obj_u5[2] * 100) |> round(1)
-  
+
   
   ## get overall estimates 
   glht_overall <- glht(model, linfct = t(c(1,mean(df$u5))))
@@ -594,8 +623,8 @@ regress_unadj_match_ageint <- function(df,ocv){
   ve_overall <- (conf_int_obj_overall[1] * 100) |> round(1)
   ve_overall_lb <- (conf_int_obj_overall[3] * 100)|> round(1)
   ve_overall_ub <- (conf_int_obj_overall[2] * 100) |> round(1)
-  
-  
+
+
   # GET NUMBERS OF CASES AND CONTROLS
   ## Identifying and removing cases with no matched controls for all age groups
   
@@ -604,7 +633,7 @@ regress_unadj_match_ageint <- function(df,ocv){
   
   red_df_overall = df %>% filter(id_case %in% matched_cases_overall$id_case) %>% 
     dplyr::select(id_case,outcome,ocv,vac,vac_u5,age_vacc,u5) |> drop_na() # data frame for all ages, including only cases with at least 1 matched control
-  
+
   ##  identifying and removing cases with no matched controls in the u5 age group
   ids_unmatched_u5 = df %>% filter(!is.na(ocv) & u5==TRUE) %>% group_by(id_case) %>% dplyr::count() %>% filter(n==1) # ids of single observations 
   matched_cases_u5 <- df %>% filter(!is.na(ocv) & u5==TRUE & case_control == 1 & !id_case %in% ids_unmatched_u5$id_case) # cases with matched controls
@@ -612,14 +641,14 @@ regress_unadj_match_ageint <- function(df,ocv){
   red_df_u5 = df %>% filter(id_case %in% matched_cases_u5$id_case & u5==TRUE) %>% 
     dplyr::select(id_case,outcome,ocv,vac,vac_u5,age_vacc,u5) |> drop_na()
   
-  ## identifying and removing cases with no matched controls in the ≥ 5 years age group
+   ## identifying and removing cases with no matched controls in the ≥ 5 years age group
   
   ids_unmatched_o5 = df %>% filter(!is.na(ocv) & u5==FALSE) %>% group_by(id_case) %>% dplyr::count() %>% filter(n==1) # ids of single observations 
   matched_cases_o5 <- df %>% filter(!is.na(ocv) & u5==FALSE & case_control == 1 & !id_case %in% ids_unmatched_o5$id_case) # cases with matched controls
   
   red_df_o5 = df %>% filter(id_case %in% matched_cases_o5$id_case & u5==FALSE) %>% 
     dplyr::select(id_case,outcome,ocv,vac,vac_u5,age_vacc,u5) |> drop_na()
-  
+
   ## n of cases and controls
   
   n_case_overall <- sum(red_df_overall$case_control==1)
@@ -628,7 +657,7 @@ regress_unadj_match_ageint <- function(df,ocv){
   n_case_o5 <- sum(red_df_o5$case_control==1 )
   n_control_u5 <- sum(red_df_u5$case_control==0)
   n_control_o5 <- sum(red_df_o5$case_control==0)
-  
+
   # still need to add number of cases and controls here
   ve_df <- tribble(
     ~category, ~n_case, ~n_control, ~ve, ~ve_lb, ~ve_ub,
@@ -636,47 +665,47 @@ regress_unadj_match_ageint <- function(df,ocv){
     "under 5 years", n_case_u5,n_control_u5, ve_u5,ve_u5_lb,ve_u5_ub,
     "5 and older", n_case_o5, n_control_o5, ve_o5,ve_o5_lb,ve_o5_ub 
   )
-  
-  #   print(model)
-  return(ve_df)  
+
+#   print(model)
+   return(ve_df)  
 }
 
 
 
 ## function for the adjusted model with age interaction 
 
-regress_adj_match_ageint <- function(df, ocv, confounders) {
-  
-  
-  # adding some extra fields to the data frame
+ regress_adj_match_ageint <- function(df, ocv, confounders) {
+   
+
+   # adding some extra fields to the data frame
   df <- df |> mutate(u5=if_else(age_vacc<5,TRUE,FALSE),
                      ocv_single_dose = case_when(ocv_single_dose=="Single dose" ~ TRUE,
-                                                 ocv_single_dose=="Not vaccinated" ~ FALSE,
-                                                 TRUE ~ NA),
+                     ocv_single_dose=="Not vaccinated" ~ FALSE,
+                     TRUE ~ NA),
                      ocv_2dose = case_when(ocv_2dose=="Two doses" ~ TRUE,
-                                           ocv_2dose=="Not vaccinated" ~ FALSE,
-                                           TRUE ~ NA),
+                      ocv_2dose=="Not vaccinated" ~ FALSE,
+                      TRUE ~ NA),
                      ocv_atleast_1dose=case_when(ocv_atleast_1dose=="One dose or more" ~ TRUE,
-                                                 ocv_atleast_1dose=="Not vaccinated" ~ FALSE,
-                                                 TRUE ~ NA), 
+                      ocv_atleast_1dose=="Not vaccinated" ~ FALSE,
+                      TRUE ~ NA), 
                      vac=case_when(.data[[ocv]]==TRUE ~ TRUE,
                                    .data[[ocv]]==FALSE ~ FALSE,
                                    TRUE ~ NA),
                      vac_u5=vac*u5,
-                     o5_numeric = as.numeric(1-u5),
-                     u5_numeric=as.numeric(u5),
-                     age_vac_O5_centered = age_vacc - (df |> filter(age_vacc>=5) |> dplyr::summarize(ma= mean(age_vacc)) |> dplyr::pull(ma)),
-                     age_vac_u5_centered = age_vacc - (df |> filter(age_vacc<5) |> dplyr::summarize(ma= mean(age_vacc)) |> dplyr::pull(ma)))
+         o5_numeric = as.numeric(1-u5),
+         u5_numeric=as.numeric(u5),
+         age_vac_O5_centered = age_vacc - (df |> filter(age_vacc>=5) |> dplyr::summarize(ma= mean(age_vacc)) |> dplyr::pull(ma)),
+         age_vac_u5_centered = age_vacc - (df |> filter(age_vacc<5) |> dplyr::summarize(ma= mean(age_vacc)) |> dplyr::pull(ma)))
   
   if("wealth_centered" %in% colnames(df)) {
-    
-    formula <- as.formula(paste0(outcome, "~ vac + vac_u5 + o5_numeric:poly(age_vac_O5_centered, 2, raw = TRUE) + u5_numeric:age_vac_u5_centered + poly(n_hh_centered, 3, raw = TRUE) + wealth_centered", "+", paste(confounders, collapse = "+"), "+", "strata(id_case)"))
-    
-  }else{
-    
-    formula <- as.formula(paste0(outcome, "~ vac + vac_u5 + o5_numeric:poly(age_vac_O5_centered, 2, raw = TRUE) + u5_numeric:age_vac_u5_centered + strata(id_case)"))
-    
-  }
+
+  formula <- as.formula(paste0(outcome, "~ vac + vac_u5 + o5_numeric:poly(age_vac_O5_centered, 2, raw = TRUE) + u5_numeric:age_vac_u5_centered + rcs(n_hh_centered, 4) + wealth_centered", "+", paste(confounders, collapse = "+"), "+", "strata(id_case)"))
+
+   }else{
+
+formula <- as.formula(paste0(outcome, "~ vac + vac_u5 + o5_numeric:poly(age_vac_O5_centered, 2, raw = TRUE) + u5_numeric:age_vac_u5_centered + strata(id_case)"))
+
+   }
   
   model  <- clogit(formula, data = df)
   
@@ -691,21 +720,21 @@ regress_adj_match_ageint <- function(df, ocv, confounders) {
   ve_o5 <- (conf_int_obj_o5[1] * 100) |> round(1)
   ve_o5_lb <- (conf_int_obj_o5[3 ] * 100) |> round(1)
   ve_o5_ub <- (conf_int_obj_o5[2 ] * 100) |> round(1)
-  
+
   ## get estimates for u5
   glht_u5 <- glht(model, linfct = t(c(1, 1, rep(0, n_coef-2))))
   conf_int_obj_u5 <- c(1-exp(confint(glht_u5)$confint))
   ve_u5 <- (conf_int_obj_u5[1] * 100) |> round(1)
   ve_u5_lb <- (conf_int_obj_u5[3 ] * 100) |> round(1)
   ve_u5_ub <- (conf_int_obj_u5[2 ] * 100) |> round(1)
-  
+
   ## get overall estimates 
   glht_overall <- glht(model, linfct = t(c(1, mean(df$u5), rep(0, n_coef-2))))
   conf_int_obj_overall <- 1-exp(confint(glht_overall)$confint) # overall estimate weighted by proportion of cases u5
   ve_overall <- (conf_int_obj_overall[1 ] * 100) |> round(1)
   ve_overall_lb <- (conf_int_obj_overall[3 ] * 100)|> round(1)
   ve_overall_ub <- (conf_int_obj_overall[2] * 100) |> round(1)
-  
+
   # GET NUMBERS OF CASES AND CONTROLS
   ## Identifying and removing cases with no matched controls for all age groups
   
@@ -714,7 +743,7 @@ regress_adj_match_ageint <- function(df, ocv, confounders) {
   
   red_df_overall = df %>% filter(id_case %in% matched_cases_overall$id_case) %>% 
     dplyr::select(id_case,outcome,ocv,vac,vac_u5,age_vacc,u5) |> drop_na() # data frame for all ages, including only cases with at least 1 matched control
-  
+
   ##  identifying and removing cases with no matched controls in the u5 age group
   ids_unmatched_u5 = df %>% filter(!is.na(ocv) & u5==TRUE) %>% group_by(id_case) %>% dplyr::count() %>% filter(n==1) # ids of single observations 
   matched_cases_u5 <- df %>% filter(!is.na(ocv) & u5==TRUE & case_control == 1 & !id_case %in% ids_unmatched_u5$id_case) # cases with matched controls
@@ -722,7 +751,7 @@ regress_adj_match_ageint <- function(df, ocv, confounders) {
   red_df_u5 = df %>% filter(id_case %in% matched_cases_u5$id_case & u5==TRUE) %>% 
     dplyr::select(id_case,outcome,ocv,vac,vac_u5,age_vacc,u5) |> drop_na()
   
-  ## identifying and removing cases with no matched controls in the ≥ 5 years age group
+   ## identifying and removing cases with no matched controls in the ≥ 5 years age group
   
   ids_unmatched_o5 = df %>% filter(!is.na(ocv) & u5==FALSE) %>% group_by(id_case) %>% dplyr::count() %>% filter(n==1) # ids of single observations 
   matched_cases_o5 <- df %>% filter(!is.na(ocv) & u5==FALSE & case_control == 1 & !id_case %in% ids_unmatched_o5$id_case) # cases with matched controls
@@ -738,7 +767,7 @@ regress_adj_match_ageint <- function(df, ocv, confounders) {
   n_case_o5 <- sum(red_df_o5$case_control==1 )
   n_control_u5 <- sum(red_df_u5$case_control==0)
   n_control_o5 <- sum(red_df_o5$case_control==0)
-  
+
   # still need to add number of cases and controls here
   ve_df <- tribble(
     ~category, ~n_case, ~n_control, ~ve, ~ve_lb, ~ve_ub,
@@ -746,10 +775,12 @@ regress_adj_match_ageint <- function(df, ocv, confounders) {
     "under 5 years", n_case_u5,n_control_u5, ve_u5,ve_u5_lb,ve_u5_ub,
     "5 and older", n_case_o5, n_control_o5, ve_o5,ve_o5_lb,ve_o5_ub
   )
-  
-  #  print(model)
-  return(ve_df)  
+
+ #  print(model)
+   return(ve_df)  
 }
+
+ 
 ```
 
 
@@ -780,7 +811,7 @@ df_ve_atleast_1dose_agint_unadj  <- regress_unadj_match_ageint(df = df_period1, 
 df_ve_single_dose_agint_adj <- regress_adj_match_ageint(df = df_period1, ocv =  ocv1) %>% 
   dplyr::mutate(Duration = "12-17 months") %>% 
   rbind(regress_adj_match_ageint(df = df_period2, ocv =  ocv1, confounders = confounders) %>% 
-          dplyr::mutate(Duration = "24-36 months")) %>% 
+         dplyr::mutate(Duration = "24-36 months")) %>% 
   dplyr::mutate(ve_ci = paste0 (ve, "%", " (", ve_lb, "–", ve_ub, ")")) %>% 
   dplyr::select(Duration, category, ve_ci) %>% 
   dplyr::rename_at(vars(ve_ci), ~paste(., "adj", sep = "_")) 
@@ -839,18 +870,17 @@ df_ve_atleast_1dose_agint_unadj_comb <- regress_unadj_match_ageint(df = df_combi
 ### adjusted analysis, combined data
 
 df_ve_single_dose_agint_adj_comb <- regress_adj_match_ageint(df = df_combined, ocv =  ocv1) %>% mutate(Duration = "12-36 months") %>% 
-  mutate(ve_ci = paste0 (ve, "%", " (", ve_lb, "–", ve_ub, ")")) %>% 
+   mutate(ve_ci = paste0 (ve, "%", " (", ve_lb, "–", ve_ub, ")")) %>% 
   dplyr::select(Duration, category, ve_ci) %>% 
   rename_at(vars(ve_ci), ~paste(., "adj", sep = "_"))
 
-df_ve_2dose_agint_adj_comb <- regress_adj_match_ageint(df = df_combined, ocv =  ocv2) %>% 
-  mutate(Duration = "12-36 months") %>% 
-  mutate(ve_ci = paste0 (ve, "%", " (", ve_lb, "–", ve_ub, ")")) %>% 
+df_ve_2dose_agint_adj_comb <- regress_adj_match_ageint(df = df_combined, ocv =  ocv2) %>% mutate(Duration = "12-36 months") %>% 
+   mutate(ve_ci = paste0 (ve, "%", " (", ve_lb, "–", ve_ub, ")")) %>% 
   dplyr::select(Duration, category, ve_ci) %>% 
   rename_at(vars(ve_ci), ~paste(., "adj", sep = "_"))
 
 df_ve_atleast_1dose_agint_adj_comb <- regress_adj_match_ageint(df = df_combined, ocv =  ocv3) %>% mutate(Duration = "12-36 months") %>% 
-  mutate(ve_ci = paste0 (ve, "%", " (", ve_lb, "–", ve_ub, ")")) %>% 
+   mutate(ve_ci = paste0 (ve, "%", " (", ve_lb, "–", ve_ub, ")")) %>% 
   dplyr::select(Duration, category, ve_ci) %>% 
   rename_at(vars(ve_ci), ~paste(., "adj", sep = "_"))
 
@@ -958,11 +988,11 @@ over5_2dose_adj_year1 <- df_ve_two_dose_all %>%
 # rename variables to make the merging easier 
 df_effective_sample <- df_effective_sample %>% 
   mutate(Duration = str_replace_all(Duration, c("One year"= "12-17 months",
-                                                "Two years" = "24-36 months",
-                                                "Combined" = "12-36 months",
-                                                "All participants" = "overall",
-                                                "Participants above 5 years of age" =  "under 5 years",
-                                                "Participants above 5 years of age" = "5 and older" )),
+                                            "Two years" = "24-36 months",
+                                            "Combined" = "12-36 months",
+                                            "All participants" = "overall",
+                                            "Participants above 5 years of age" =  "under 5 years",
+                                            "Participants above 5 years of age" = "5 and older" )),
          category = str_remove_all(Population, c( "All participants" = "overall",
                                                   "Participants under 5 years of age" =  "under 5 years",
                                                   "Participants above 5 years of age" = "5 and older" )))
@@ -975,7 +1005,7 @@ df_ve_single_dose_all = df_ve_single_dose_all %>%
   mutate(n_case_eff = paste0(n_case, " (", effective_n_cases_1dose, ")"),
          n_control_eff = paste0(n_control, " (", effective_n_controls_1dose, ")")) %>% 
   dplyr::select(Duration, category, n_case_eff, n_control_eff, ve_ci, ve_ci_adj)
-
+         
 # VE output for manuscript
 
 df_ve_single_dose_all %>% 
@@ -984,18 +1014,17 @@ df_ve_single_dose_all %>%
   flextable::as_grouped_data(groups= "Duration") %>% 
   flextable::as_flextable() %>% 
   flextable::set_header_labels(
-    values = list(
-      category = "Population",
-      n_case_eff = "Cases (Effective N)",
-      n_control_eff = "Controls (Effective N)",
-      ve_ci = "Unadjusted VE (95% CI)",
-      ve_ci_adj = "Adjusted VE (95% CI)")) %>% 
-  flextable::autofit() %>% 
-  flextable::set_table_properties( width = 1, layout = "autofit") %>% 
-  flextable::bold(i = ~ !is.na(Duration)) %>%
-  flextable::align(i = ~ is.na(Duration), align = "left") 
+  values = list(
+    category = "Population",
+    n_case_eff = "Cases (Effective N)",
+    n_control_eff = "Controls (Effective N)",
+    ve_ci = "Unadjusted VE (95% CI)",
+    ve_ci_adj = "Adjusted VE (95% CI)")) %>% 
+flextable::autofit() %>% 
+flextable::set_table_properties( width = 1, layout = "autofit") %>% 
+flextable::bold(i = ~ !is.na(Duration)) %>%
+flextable::align(i = ~ is.na(Duration), align = "left") 
+
+
 ```
 
-```{r}
-sessionInfo()
-```
