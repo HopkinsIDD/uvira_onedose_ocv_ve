@@ -18,7 +18,8 @@ pacman::p_load(
   multcomp,
   flextable,
   gtsummary,
-  here)
+  here,
+  rms)
 
 
 knitr::opts_knit$set(root.dir = here::here())
